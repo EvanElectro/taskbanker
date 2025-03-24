@@ -1,24 +1,29 @@
 
-export interface Task {
-  id: string;
-  title: string;
-  completions: CompletionRecord[];
-  createdAt: string;
-  scheduledTime?: string | null;
-}
-
-export interface CompletionRecord {
+// Define the structure of a task completion record
+export interface TaskCompletion {
   date: string;
   completed: boolean;
   timestamp: string;
 }
 
+// Define the structure of a task
+export interface Task {
+  id: string;
+  title: string;
+  completions: TaskCompletion[];
+  createdAt: string;
+  scheduledTime?: string | null;
+}
+
+// Extend Task for daily tasks with ordering
 export interface DailyTask extends Task {
   order: number;
 }
 
+// Define the possible sort options
 export type SortOption = 'mostUsed' | 'recentlyUsed' | 'alphabetical';
 
+// Define the shape of our task context
 export interface TaskContextType {
   tasks: Task[];
   dailyTasks: DailyTask[];
@@ -26,6 +31,7 @@ export interface TaskContextType {
   sortOption: SortOption;
   addTask: (title: string) => void;
   deleteTask: (id: string) => void;
+  clearDefaultTasks: () => void;
   toggleTaskCompletion: (id: string) => void;
   generateDailyTasks: (count: number) => void;
   reorderDailyTask: (id: string, direction: 'up' | 'down') => void;

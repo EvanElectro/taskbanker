@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { useTaskContext } from '../context/TaskContext';
-import { Plus, Check, Trash2, ArrowUpDown, Archive } from 'lucide-react';
+import { Plus, Check, Trash2, ArrowUpDown, Archive, Trash } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -16,7 +16,7 @@ import { SortOption } from '../types';
 import EmptyState from './EmptyState';
 
 const TaskBank: React.FC = () => {
-  const { tasks, addTask, deleteTask, toggleTaskCompletion, sortOption, setSortOption } = useTaskContext();
+  const { tasks, addTask, deleteTask, toggleTaskCompletion, sortOption, setSortOption, clearDefaultTasks } = useTaskContext();
   const [newTaskTitle, setNewTaskTitle] = useState('');
 
   const handleAddTask = (e: React.FormEvent) => {
@@ -28,6 +28,7 @@ const TaskBank: React.FC = () => {
   };
 
   const sortedTasks = sortTasks(tasks, sortOption);
+  const hasDefaultTasks = tasks.some(task => task.id.length <= 2);
 
   return (
     <div className="space-y-6">
@@ -64,6 +65,20 @@ const TaskBank: React.FC = () => {
           Add
         </Button>
       </form>
+
+      {hasDefaultTasks && (
+        <div className="flex justify-end">
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={clearDefaultTasks}
+            className="text-muted-foreground"
+          >
+            <Trash size={14} className="mr-1" />
+            Clear Starter Tasks
+          </Button>
+        </div>
+      )}
 
       {tasks.length === 0 ? (
         <EmptyState

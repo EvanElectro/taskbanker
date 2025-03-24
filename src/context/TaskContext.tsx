@@ -1,8 +1,8 @@
-
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { Task, DailyTask, SortOption, TaskContextType } from '../types';
 import { sortTasks, generateDefaultTasks } from '../utils/taskUtils';
 import { toast } from 'sonner';
+import confetti from 'canvas-confetti';
 
 const TaskContext = createContext<TaskContextType | undefined>(undefined);
 
@@ -50,9 +50,27 @@ export const TaskProvider: React.FC<{ children: React.ReactNode }> = ({ children
     toast.success('Task removed from your bank');
   };
 
+  const clearDefaultTasks = () => {
+    // Only keep tasks with IDs longer than 2 characters (non-default tasks)
+    setTasks(prevTasks => prevTasks.filter(task => task.id.length > 2));
+    setDailyTasks(prevDailyTasks => prevDailyTasks.filter(task => task.id.length > 2));
+    toast.success('Starter tasks cleared');
+  };
+
+  const celebrateTaskCompletion = () => {
+    // Fire confetti
+    confetti({
+      particleCount: 100,
+      spread: 70,
+      origin: { y: 0.6 }
+    });
+  };
+
   const toggleTaskCompletion = (id: string) => {
     const today = new Date().toISOString().split('T')[0];
     const now = new Date().toISOString();
+    let wasCompleted = false;
+    let isNowCompleted = false;
     
     // Update in main task bank
     setTasks(prevTasks => 
@@ -67,14 +85,16 @@ export const TaskProvider: React.FC<{ children: React.ReactNode }> = ({ children
         
         if (existingCompletionIndex >= 0) {
           // Toggle existing completion
-          const wasCompleted = newCompletions[existingCompletionIndex].completed;
+          wasCompleted = newCompletions[existingCompletionIndex].completed;
+          isNowCompleted = !wasCompleted;
           newCompletions[existingCompletionIndex] = {
             date: today,
-            completed: !wasCompleted,
+            completed: isNowCompleted,
             timestamp: now
           };
         } else {
           // Add new completion
+          isNowCompleted = true;
           newCompletions.push({
             date: today,
             completed: true,
@@ -102,20 +122,23 @@ export const TaskProvider: React.FC<{ children: React.ReactNode }> = ({ children
         
         if (existingCompletionIndex >= 0) {
           // Toggle existing completion
-          const wasCompleted = newCompletions[existingCompletionIndex].completed;
+          wasCompleted = newCompletions[existingCompletionIndex].completed;
+          isNowCompleted = !wasCompleted;
           newCompletions[existingCompletionIndex] = {
             date: today,
-            completed: !wasCompleted,
+            completed: isNowCompleted,
             timestamp: now
           };
           
-          // Show toast based on completion status
-          if (!wasCompleted) {
+          // Show toast and celebrate based on completion status
+          if (isNowCompleted) {
             toast.success('Task completed! Great job!');
+            celebrateTaskCompletion();
           }
           
         } else {
           // Add new completion
+          isNowCompleted = true;
           newCompletions.push({
             date: today,
             completed: true,
@@ -123,6 +146,7 @@ export const TaskProvider: React.FC<{ children: React.ReactNode }> = ({ children
           });
           
           toast.success('Task completed! Great job!');
+          celebrateTaskCompletion();
         }
         
         return {
@@ -207,6 +231,7 @@ export const TaskProvider: React.FC<{ children: React.ReactNode }> = ({ children
     sortOption,
     addTask,
     deleteTask,
+    clearDefaultTasks,
     toggleTaskCompletion,
     generateDailyTasks,
     reorderDailyTask,
