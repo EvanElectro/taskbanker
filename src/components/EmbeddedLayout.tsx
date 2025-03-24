@@ -1,6 +1,5 @@
 
 import React from 'react';
-import { useTaskContext } from '../context/TaskContext';
 
 interface EmbeddedLayoutProps {
   children: React.ReactNode;
