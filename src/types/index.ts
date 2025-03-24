@@ -23,11 +23,14 @@ export interface DailyTask extends Task {
 // Define the possible sort options
 export type SortOption = 'mostUsed' | 'recentlyUsed' | 'alphabetical';
 
+// Define the possible view types, including new embedded view
+export type ViewType = 'bank' | 'daily' | 'logbook' | 'embedded';
+
 // Define the shape of our task context
 export interface TaskContextType {
   tasks: Task[];
   dailyTasks: DailyTask[];
-  activeView: 'bank' | 'daily' | 'logbook';
+  activeView: ViewType;
   sortOption: SortOption;
   addTask: (title: string) => void;
   deleteTask: (id: string) => void;
@@ -37,5 +40,5 @@ export interface TaskContextType {
   reorderDailyTask: (id: string, direction: 'up' | 'down') => void;
   scheduleTask: (id: string, time: string | null) => void;
   setSortOption: (option: SortOption) => void;
-  setActiveView: (view: 'bank' | 'daily' | 'logbook') => void;
+  setActiveView: (view: ViewType) => void;
 }

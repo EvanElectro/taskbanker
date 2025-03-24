@@ -1,31 +1,26 @@
 
-import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { TaskProvider } from "@/context/TaskContext";
-import Index from "./pages/Index";
-import NotFound from "./pages/NotFound";
+import React from 'react';
+import { HashRouter, Routes, Route } from 'react-router-dom';
+import { TaskProvider } from './context/TaskContext';
+import { Toaster as SonnerToaster } from 'sonner';
+import Index from './pages/Index';
+import Embedded from './pages/Embedded';
+import NotFound from './pages/NotFound';
+import './App.css';
 
-const queryClient = new QueryClient();
-
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <TaskProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </BrowserRouter>
-      </TaskProvider>
-    </TooltipProvider>
-  </QueryClientProvider>
-);
+function App() {
+  return (
+    <TaskProvider>
+      <HashRouter>
+        <Routes>
+          <Route path="/" element={<Index />} />
+          <Route path="/embedded" element={<Embedded />} />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </HashRouter>
+      <SonnerToaster position="bottom-right" />
+    </TaskProvider>
+  );
+}
 
 export default App;

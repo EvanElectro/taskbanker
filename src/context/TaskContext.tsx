@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { Task, DailyTask, SortOption, TaskContextType } from '../types';
+import { Task, DailyTask, SortOption, TaskContextType, ViewType } from '../types';
 import { sortTasks, generateDefaultTasks } from '../utils/taskUtils';
 import { toast } from 'sonner';
 import confetti from 'canvas-confetti';
@@ -18,15 +18,13 @@ export const TaskProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return savedDailyTasks ? JSON.parse(savedDailyTasks) : [];
   });
   
-  const [activeView, setActiveView] = useState<'bank' | 'daily' | 'logbook'>('daily');
+  const [activeView, setActiveView] = useState<ViewType>('daily');
   const [sortOption, setSortOption] = useState<SortOption>('recentlyUsed');
 
-  // Save tasks to localStorage whenever they change
   useEffect(() => {
     localStorage.setItem('taskBank', JSON.stringify(tasks));
   }, [tasks]);
 
-  // Save daily tasks to localStorage whenever they change
   useEffect(() => {
     const today = new Date().toISOString().split('T')[0];
     localStorage.setItem(`dailyTasks_${today}`, JSON.stringify(dailyTasks));
@@ -51,14 +49,12 @@ export const TaskProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const clearDefaultTasks = () => {
-    // Only keep tasks with IDs longer than 2 characters (non-default tasks)
     setTasks(prevTasks => prevTasks.filter(task => task.id.length > 2));
     setDailyTasks(prevDailyTasks => prevDailyTasks.filter(task => task.id.length > 2));
     toast.success('Starter tasks cleared');
   };
 
   const celebrateTaskCompletion = () => {
-    // Fire confetti
     confetti({
       particleCount: 100,
       spread: 70,
@@ -72,7 +68,6 @@ export const TaskProvider: React.FC<{ children: React.ReactNode }> = ({ children
     let wasCompleted = false;
     let isNowCompleted = false;
     
-    // Update in main task bank
     setTasks(prevTasks => 
       prevTasks.map(task => {
         if (task.id !== id) return task;
@@ -84,7 +79,6 @@ export const TaskProvider: React.FC<{ children: React.ReactNode }> = ({ children
         let newCompletions = [...task.completions];
         
         if (existingCompletionIndex >= 0) {
-          // Toggle existing completion
           wasCompleted = newCompletions[existingCompletionIndex].completed;
           isNowCompleted = !wasCompleted;
           newCompletions[existingCompletionIndex] = {
@@ -93,7 +87,6 @@ export const TaskProvider: React.FC<{ children: React.ReactNode }> = ({ children
             timestamp: now
           };
         } else {
-          // Add new completion
           isNowCompleted = true;
           newCompletions.push({
             date: today,
@@ -109,7 +102,6 @@ export const TaskProvider: React.FC<{ children: React.ReactNode }> = ({ children
       })
     );
     
-    // Update in daily tasks
     setDailyTasks(prevDailyTasks =>
       prevDailyTasks.map(task => {
         if (task.id !== id) return task;
@@ -121,7 +113,6 @@ export const TaskProvider: React.FC<{ children: React.ReactNode }> = ({ children
         let newCompletions = [...task.completions];
         
         if (existingCompletionIndex >= 0) {
-          // Toggle existing completion
           wasCompleted = newCompletions[existingCompletionIndex].completed;
           isNowCompleted = !wasCompleted;
           newCompletions[existingCompletionIndex] = {
@@ -130,14 +121,11 @@ export const TaskProvider: React.FC<{ children: React.ReactNode }> = ({ children
             timestamp: now
           };
           
-          // Show toast and celebrate based on completion status
           if (isNowCompleted) {
             toast.success('Task completed! Great job!');
             celebrateTaskCompletion();
           }
-          
         } else {
-          // Add new completion
           isNowCompleted = true;
           newCompletions.push({
             date: today,
@@ -158,14 +146,11 @@ export const TaskProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const generateDailyTasks = (count: number) => {
-    // Clear any existing daily tasks
     setDailyTasks([]);
     
-    // Get random tasks from bank
     const shuffled = [...tasks].sort(() => 0.5 - Math.random());
     const selectedTasks = shuffled.slice(0, Math.min(count, shuffled.length));
     
-    // Create daily tasks with order
     const newDailyTasks: DailyTask[] = selectedTasks.map((task, index) => ({
       ...task,
       order: index
@@ -188,12 +173,9 @@ export const TaskProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const newDailyTasks = [...dailyTasks];
     const taskToMove = newDailyTasks[currentIndex];
     
-    // Remove task from current position
     newDailyTasks.splice(currentIndex, 1);
-    // Insert task at new position
     newDailyTasks.splice(newIndex, 0, taskToMove);
     
-    // Update order property
     const updatedTasks = newDailyTasks.map((task, idx) => ({
       ...task,
       order: idx
@@ -203,14 +185,12 @@ export const TaskProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const scheduleTask = (id: string, time: string | null) => {
-    // Update in main task bank
     setTasks(prevTasks => 
       prevTasks.map(task => 
         task.id === id ? { ...task, scheduledTime: time } : task
       )
     );
     
-    // Update in daily tasks
     setDailyTasks(prevDailyTasks =>
       prevDailyTasks.map(task => 
         task.id === id ? { ...task, scheduledTime: time } : task
