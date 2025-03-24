@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useTaskContext } from '../context/TaskContext';
 import { Archive, Calendar, BookOpen } from 'lucide-react';
@@ -15,7 +14,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       <header className="w-full py-6 px-4 sm:px-6 md:px-8 border-b border-border bg-white/50 backdrop-blur-sm sticky top-0 z-10">
         <div className="max-w-4xl mx-auto flex items-center justify-between">
           <h1 className="text-2xl font-semibold tracking-tight">
-            TaskBank
+            Daily Drips
           </h1>
           <nav className="flex space-x-1">
             <button
@@ -63,7 +62,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       
       <footer className="py-6 border-t border-border bg-white/50 backdrop-blur-sm">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 md:px-8 text-center text-sm text-muted-foreground">
-          TaskBank &copy; {new Date().getFullYear()} • Designed with simplicity in mind
+          Daily Drips &copy; {new Date().getFullYear()} • Designed with simplicity in mind
         </div>
       </footer>
     </div>

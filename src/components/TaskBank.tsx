@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { useTaskContext } from '../context/TaskContext';
-import { Plus, Check, Trash2, ArrowUpDown } from 'lucide-react';
+import { Plus, Check, Trash2, ArrowUpDown, Archive } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
